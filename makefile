@@ -19,8 +19,8 @@ client:	server
 
 server: clean
 
-	g++ -m64 -O2 -fPIC -std=c++11   -c server.c -o server.o
-	g++ server.o -o server
+	g++  -I$(INC) -I$(IPPinc)   -I$(IPPinc)  -I$(WOLF_DIR) -I$(WOLF_CRYPT) -m64 -O2 -fPIC -std=c++11   -c server.c -o server.o
+	g++ server.o -o server -L $(IPPPath)  -l$(TARGET_LIB_CLIENT)
 
 clean:
 	rm -f *~ *# client clientOneByOne server *.o

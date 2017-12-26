@@ -1,7 +1,7 @@
 #ifndef _Encryptor_h
 #define _Encryptor_h
 
-#include "../ext.h"
+//#include "../ext.h"
 
 #if ENCRYPT_LIB==2 
   #include "ippcp.h"

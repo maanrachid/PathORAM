@@ -4,9 +4,9 @@
 
 #include <string.h>
 #include <stdio.h>
-#define BUFFERSIZE 10000
+#define BUFFERSIZE 5000
 #define ELEMENTNUM 4
-#define POS_MAP_LIMIT 10 // 2^22
+#define POS_MAP_LIMIT 1000000 // 2^22
 #define TREES 50
 #define STACH_LIMIT 1000
 #define Z 4
@@ -43,20 +43,6 @@ typedef struct Bloc {
   int element[ELEMENTNUM];
 } Block;
 
-
-typedef struct InitVectorStr{
-
-  InitVectorStr(){memset(this,0,sizeof(struct InitVectorStr));}
-  struct InitVectorStr& operator= (const struct InitVectorStr& B){
-    this->element[0] = B.element[0];return *this;
-  }
-    struct InitVectorStr& operator= (const int i){this->element[0] = i;return *this;}
-      operator int(){ return this->element[0];}
-  struct InitVectorStr& operator++ (int i){ this->element[0]+=1;return *this;}
-  struct InitVectorStr& operator+(int i){this->element[0]+=i;return *this;} 
-  bool operator== (const int i){return this->element[0]==i;}
-  int element[4];
-}InitVectorStr;
 
 
 typedef struct tr_n {

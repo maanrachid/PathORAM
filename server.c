@@ -12,7 +12,7 @@
 #include "ext.h"
 #include "MyMath.h"
 #include "Tree.h"
-
+#include "Encryptor.h"
 
 
 void checkContents(Block* Arr1,char *message);
@@ -108,7 +108,9 @@ int main(int argc , char *argv[])
     memcpy(v,&Buf[Z*sizeof(Block)],Z*sizeof(vect));
     long long received_IV;
     memcpy(&received_IV,&Buf[TotalSize-sizeof(long long)],sizeof (long long));
-    printf("%d \n",received_IV);
+
+    
+    //printf("%d \n",received_IV);
     //printf("%d\n",b[Z-1]);
     //printf("%d\n",v[Z-1].value);
 
@@ -163,33 +165,6 @@ int main(int argc , char *argv[])
 
   
 
-  exit(0);
-
-  
-  
-  //Receive a message from client --------------------------------------
-  while ( (read_size = recv(client_sock , client_message , 3*sizeof(Block) , 0)) > 0 )
-    {
-     
-      //passMessageFromClient(eid,client_message,3*sizeof(Block));
-     
-      //reSetComCounter(eid);
-    
-
-
-      
-      //getMessageToClient(eid,client_message,3*sizeof(Block));
-      
-      
-      // A[0]=2;
-
-      //send_and_receive(sock,A,B,pacsize,pacsize);
-      //checkContents(B,"Server Reply After writing");
-     
-      write(client_sock,client_message,3 * sizeof(Block));
-      //freeMem(eid);
-      //exit(0);
-    }
 
   close(sock); // disconnect from server
 
@@ -198,17 +173,6 @@ int main(int argc , char *argv[])
   //delete [] B;
 
   
-
-  
-  if(read_size == 0)
-    {
-      puts("Client disconnected");
-      fflush(stdout);
-    }
-  else if(read_size == -1)
-    {
-      perror("recv failed");
-    }
      
   return 0;
 }
@@ -232,14 +196,14 @@ int recieve_and_send(int sock){
       counter+=4;
       bufsize = *((int *)&buffer[counter]);
       counter+=4;
-      printf("%d,%d,%d,%d\n",treeID,x,command,bufsize);
+      //printf("%d,%d,%d,%d\n",treeID,x,command,bufsize);
 
       int dummy;
 	
       // executing the command 
-      if (command==-1)
-	return command;
-      else if (command==1 && treeID>0){
+      //if (command==-1)
+      //return command;
+      if (command==1 && treeID>0){
 	counter=4;
 	tree_node_aux t = *links_to_leaves_aux[treeID][x];
 	int size=0;
@@ -271,8 +235,8 @@ int recieve_and_send(int sock){
 	  counter+=sizeof(vect)*Z;
 	  bufsize2-=sizeof(vect)*Z;
 	  memcpy(&(t->IV),&buffer[counter],sizeof(long long));
-	  printf("IV : %d\n",t->IV);
-	  printf("value for first vect %d\n",((vect*)(&buffer[counter-Z*sizeof(vect)]))->value);
+	  //printf("IV : %d\n",t->IV);
+	  //printf("value for first vect %d\n",((vect*)(&buffer[counter-Z*sizeof(vect)]))->value);
 	  counter+=sizeof(long long);
 	  bufsize2-=sizeof(long long);
 	  t=t->parent;
@@ -310,8 +274,8 @@ int recieve_and_send(int sock){
 	  counter+=sizeof(Block)*Z;
 	  bufsize2-=sizeof(Block)*Z;
 	  memcpy(&(t->IV),&buffer[counter],sizeof(long long));
-	  printf("IV : %d\n",t->IV);
-	  printf("value for first block %d\n",((vect*)(&buffer[counter-Z*sizeof(Block)]))->value);
+	  //printf("IV : %d\n",t->IV);
+	  //printf("value for first block %d\n",((vect*)(&buffer[counter-Z*sizeof(Block)]))->value);
 	  counter+=sizeof(long long);
 	  bufsize2-=sizeof(long long);
 	  t=t->parent;

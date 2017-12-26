@@ -10,6 +10,10 @@
 #include "ext.h"
 #include "MyMath.h"
 #include "Encryptor.h"
+
+
+
+#define ENC true
 //#include "wolfssl/wolfcrypt/aes.h"
 
 //#define ARRSIZE 1000
@@ -106,8 +110,11 @@ int main(int argc , char *argv[])
     b[i]=-1; // all values are dummies.
     v[i].value=-1;
   }
-  //  Encrypt((char*)b,Z*sizeof(Block),1,com_key);
-  //Encrypt((char*)v,Z*sizeof(vect),1,com_key);
+
+  if (ENC){
+    Encrypt((char*)b,Z*sizeof(Block),1,com_key);
+    Encrypt((char*)v,Z*sizeof(vect),1,com_key);
+  }
   
  
   char *Buf=(char*)malloc(TotalSize);
@@ -172,15 +179,6 @@ int main(int argc , char *argv[])
   }
 
 
-  /* Testing only
-  read_path_aux(sock,10,1);
-  vect vec1; vec1.index=1;vec1.position=1;vec1.value=2;
-  vect vec2; vec2.index=2;vec2.position=2;vec2.value=1;
-  add_to_stach(1,vec1);
-  add_to_stach(1,vec2);
-
-  write_path_aux(sock,10,1); */
-
   
 
   
@@ -193,7 +191,6 @@ int main(int argc , char *argv[])
     }
     printf("Position map is ready\n");
   }
-
 
 
 
@@ -221,26 +218,16 @@ int main(int argc , char *argv[])
   //end initialization
 
 
-  
- 
 
-  
-  //keep communicating with Middle
   for(int i=0;i<requests;i++)
-     //    while(1)
-  
-    {
-
-  
-    
-
-      int request = rand()%ARRSIZE;
-      printf("Requesting item %d\n",request);
-      printf("The value of item %d is %d\n",request,(int)request_an_item(sock,request,-1));
-
-
       
-
+    {
+    
+      int request = rand()%ARRSIZE;
+      printf("Request %d for item %d\n",i,request);
+      printf("The value of item %d is %d\n",request,
+	     (int)request_an_item(sock,request,-1));
+      printf("------------------\n");
       
       //encrypt(message,3);  
       //Encrypt((char*)message,3,1,com_key); // encrypt
@@ -254,9 +241,10 @@ int main(int argc , char *argv[])
   
     // encrypt then decrypt then change 
     }
-  
+
   char dummy[2];int dumm=2;
   send_and_recieve(sock,1,1,-1,dummy,&dumm);
+
   close(sock);
   return 0;
 }
@@ -438,15 +426,17 @@ void read_path(int sock,int x){
 
   //printf("finish send and received a read for path %d size  %d\n",x,size);
   
-  int counter=4;
+  int counter=0;
   while (size>0){
     long long *IV_p= (long long *)&buf[counter];
     long long IV= *IV_p;
     counter+= sizeof(long long);
     size-= sizeof(long long);
-    Block *t = (Block*)&buf[counter];
-    //Encrypt((char*) t, sizeof(Block)*Z ,2, IV); // decrypting the received node
+    Block *t = (Block*)&buf[counter];    
+    if (ENC) Encrypt((char*) t, sizeof(Block)*Z ,2, IV); // decrypting the received node
+    //printf("decryption is done using %d \n",IV);
     for(int i=0;i<Z;i++){
+      //printf("%d\n",(int)t[i]);
       if (t[i]!=-1){
 	//printf("adding to the stach - read path %d value %d\n",x,(int)t[i]);
 	add_to_stach_item(t[i]);
@@ -454,6 +444,7 @@ void read_path(int sock,int x){
     }
     counter +=  sizeof(Block)*Z;
     size-= sizeof(Block)*Z;
+    
   }
 
 
@@ -473,16 +464,17 @@ void read_path_aux(int sock,int x,int treeID){
 
   //printf("finish send and received a read for path %d size  %d\n",x,size);
   
-  int counter=4;
+  int counter=0;
   while (size>0){
     long long *IV_p= (long long *)&buf[counter];
     long long IV= *IV_p;
     counter+= sizeof(long long);
     size-= sizeof(long long);
     vect *t = (vect*)&buf[counter];
-    //Encrypt((char*) t, sizeof(vect)*Z ,2, IV); // decrypting the received node
+    if (ENC) Encrypt((char*) t, sizeof(vect)*Z ,2, IV); // decrypting the received node
+    //printf("aux decryption is done using %d \n",IV);
     for(int i=0;i<Z;i++){
-     
+      //printf("%d\n",(int)t[i].value);
       if (t[i].value!=-1){
 	//printf("adding to the stach - read path %d value %d\n",x,t[i].value);
 	add_to_stach(treeID,t[i]);
@@ -514,7 +506,7 @@ void add_to_stach_item(Block v){
   if (stach_counter==stach_sizes[0]-1){
     stach_sizes[0]+=STACH_LIMIT;
     stach = (Block*)realloc(stach,stach_sizes[0]*sizeof(Block));
-    printf("Reallocating is done to tree 0\n");
+    printf("Reallocating is done to items tree\n");
   }  
 }
 
@@ -542,7 +534,7 @@ void send_and_recieve(int sock,int treeid,int x,int command, char * buf,int *buf
   recv(sock , buffer , BUFFERSIZE , 0);
 
   *bufsize = *((int*)buffer);
-  memcpy(buf,buffer,*bufsize);
+  memcpy(buf,&buffer[4],*bufsize);
 
 
   /*********************new code
@@ -619,7 +611,7 @@ void write_path(int sock,int x){
       memcpy(&buffer[counter],&z,sizeof(Block));
       counter+=sizeof(Block);
     }
-    //Encrypt(&buffer[counter-sizeof(Block)*Z],sizeof(Block)*Z,1,com_key); // encrypt
+    if (ENC) Encrypt(&buffer[counter-sizeof(Block)*Z],sizeof(Block)*Z,1,com_key); // encrypt
     memcpy(&buffer[counter],&com_key,sizeof(long long));
     counter+=sizeof(long long);
   }
@@ -668,7 +660,7 @@ void write_path_aux(int sock,int x,int treeID){
       memcpy(&buffer[counter],&z,sizeof(vect));
       counter+=sizeof(vect);
     }
-    //Encrypt(&buffer[counter-sizeof(vect)*Z],sizeof(vect)*Z,1,com_key);
+    if (ENC) Encrypt(&buffer[counter-sizeof(vect)*Z],sizeof(vect)*Z,1,com_key);
     memcpy(&buffer[counter],&com_key,sizeof(long long));
     counter+=sizeof(long long);
   }
@@ -690,7 +682,7 @@ Block request_an_item(int sock,int index,int newval2){
   Block ret;
   
   for(int i=0;i<stach_counter;i++){
-    printf("stach[i] %d %d\n",stach[i].getPos(),(int)stach[i]);
+    //printf("stach[i] %d %d\n",stach[i].getPos(),(int)stach[i]);
     if (stach[i].getPos() == index){
       stach[i].setMap(newval);
       if (newval2!=-1){
