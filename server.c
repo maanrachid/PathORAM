@@ -12,7 +12,6 @@
 #include "ext.h"
 #include "MyMath.h"
 #include "Tree.h"
-#include "Encryptor.h"
 
 
 void checkContents(Block* Arr1,char *message);
@@ -97,9 +96,12 @@ int main(int argc , char *argv[])
   puts("Connection accepted");
   // end connecting to client ----------------------------------------------------------
 
-  // receiving encrypted vect and block and the IV 
+  // receiving encrypted vect and block and the IV
+  tree_node *tr0;
+  tree_node_aux **tr_aux;
   int TotalSize = Z*(sizeof(vect)+sizeof(Block)) + sizeof(long long);
-
+  int trees_count;
+  
   Block b[Z];vect v[Z];
   char *Buf=(char *) malloc(TotalSize);
   if ( (read_size = recv(client_sock , Buf , TotalSize , 0)) > 0 ){
@@ -119,8 +121,8 @@ int main(int argc , char *argv[])
     // Creating tree and auxiliary trees
     clock_t begin_time = clock();
     printf("Creating Items Binary tree....\n");
-    tree_node *tr0 = create_tree(ARRSIZE);
-    tree_node_aux **tr_aux=new tree_node_aux*[TREES];
+    tr0 = create_tree(ARRSIZE);
+    tr_aux=new tree_node_aux*[TREES];
     //traverse(tr0);
     tr0->parent=NULL;
     encrypt_tree(tr0,b,received_IV);
@@ -133,7 +135,7 @@ int main(int argc , char *argv[])
     
     int temp = ARRSIZE;
     int temp1 = find_closet_power_of_two(temp);// find closet size of power of 2
-    int trees_count=1;
+    trees_count=1;
 
     if (temp>POS_MAP_LIMIT){
       begin_time =clock();
@@ -167,7 +169,8 @@ int main(int argc , char *argv[])
 
 
   close(sock); // disconnect from server
-
+  freeTree(tr0);
+  for(int i=1;i<trees_count;i++) freeAuxTree(tr_aux[i]);
   //freeMem(eid);
   //delete [] A;
   //delete [] B;

@@ -3,12 +3,12 @@
 
 //#include "../ext.h"
 
-#if ENCRYPT_LIB==2 
-  #include "ippcp.h"
-  #include "ippcore.h"
-#elif ENCRYPT_LIB==3
-  #include "wolfssl/wolfcrypt/aes.h"
-#endif
+//#if ENCRYPT_LIB==2 
+#include "ippcp.h"
+#include "ippcore.h"
+//#elif ENCRYPT_LIB==3
+//  #include "wolfssl/wolfcrypt/aes.h"
+//#endif
 
 
 
@@ -20,7 +20,7 @@ long long arr_256[] = {256,65536,16777216
 
 
 
-
+/*
 #if ENCRYPT_LIB==3
 
 void incr_pIV_wolf(byte pIV [],long long IV_counter){
@@ -82,6 +82,8 @@ void encrypt_wolfssl(char message[], int size,int op,long long IV_counter){
 
 #if ENCRYPT_LIB==2
 
+*/
+
 void incr_pIV_ipp( Ipp8u pIV [],long long IV_counter){
 
   long long num = IV_counter;
@@ -111,7 +113,8 @@ void encrypt_ipp(char message[], int size,int op,long long IV_counter){
   Ipp8u pIV[] = "\xff\xee\xdd\xcc\xbb\xaa\x99\x88"
     "\x77\x66\x55\x44\x33\x22\x11\x00"; 
 
-  incr_pIV_ipp(pIV,IV_counter);
+  memcpy(pIV,&IV_counter,sizeof(long long));
+  //  incr_pIV_ipp(pIV,IV_counter);
 
   
   Ipp8u* pSrc= (Ipp8u*)message;
@@ -132,20 +135,22 @@ void encrypt_ipp(char message[], int size,int op,long long IV_counter){
   }
   
   memcpy(message,pDst,msgsize);
+  free(pDst);
+  delete [] (Ipp8u*)pCtx;
 }
 
-#endif
+//#endif
 
 
 
 
 void Encrypt(char message[], int size,int op,long long IV_counter){
 
-  #if ENCRYPT_LIB==2
+  //#if ENCRYPT_LIB==2
     encrypt_ipp(message,size,op,IV_counter);
-  #elif ENCRYPT_LIB==3
-    encrypt_wolfssl(message,size,op,IV_counter);
-  #endif
+    //#elif ENCRYPT_LIB==3
+    //encrypt_wolfssl(message,size,op,IV_counter);
+    //#endif
 }
 
 

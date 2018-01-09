@@ -119,7 +119,23 @@ tree_node_aux *create_tree_aux(int n,int index){
   return ptr;
 }
 
+void freeAuxTree(tree_node_aux *n){
+  if (n==NULL)
+    return;
+  else{
+    freeAuxTree(n->left);
+    freeAuxTree(n->right);
+  }
+}
 
+void freeTree(tree_node *n){
+  if (n==NULL)
+    return;
+  else{
+    freeTree(n->left);
+    freeTree(n->right);
+  }
+}
 
 
 #endif 

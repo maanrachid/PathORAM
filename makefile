@@ -7,7 +7,7 @@ WOLF_DIR = /home/sgx/wolfssl
 WOLF_CRYPT = /home/sgx/wolfssl/wolfcypt
 WOLF_LIB_Client = wolfssl
 WOLF_D = WOLFSSL_SGX
-TARGET_LIB_CLIENT = $(WOLF_LIB_Client)
+TARGET_LIB_CLIENT = $(IPP_LIB_Client)
 
 
 client:	server
@@ -19,8 +19,8 @@ client:	server
 
 server: clean
 
-	g++  -I$(INC) -I$(IPPinc)   -I$(IPPinc)  -I$(WOLF_DIR) -I$(WOLF_CRYPT) -m64 -O2 -fPIC -std=c++11   -c server.c -o server.o
-	g++ server.o -o server -L $(IPPPath)  -l$(TARGET_LIB_CLIENT)
+	g++  -m64 -O2 -fPIC -std=c++11   -c server.c -o server.o
+	g++ server.o -o server
 
 clean:
 	rm -f *~ *# client clientOneByOne server *.o

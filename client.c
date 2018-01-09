@@ -69,11 +69,12 @@ int main(int argc , char *argv[])
   
   com_key=10000;
 
+  /*
   if (ENCRYPT_LIB== 2)
     printf("Encryption is done using IPP.\n");
   else if  (ENCRYPT_LIB== 3)
     printf("Encryption is done using wolfssl.\n"); 
-  
+  */
   
   //Create socket
   sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -141,6 +142,7 @@ int main(int argc , char *argv[])
 
   
   srand(time(NULL));
+ 
   
   if (ARRSIZE<=POS_MAP_LIMIT){
     positionmap = (int*)malloc(ARRSIZE*sizeof(int));
@@ -179,24 +181,39 @@ int main(int argc , char *argv[])
   }
 
 
-  
+  clock_t begin_time;
 
   
   if (trees_count>1){
+    begin_time = clock();
     printf("Creating position map using auxillary trees..\n");
+    
     for(int i=0;i<tree_sizes[trees_count-1];i++){
       //printf("processing %d -------------- \n",i); 
-      positionmap[i]= initialize_pos_recursive(sock,i,trees_count-1,positionmap[i]);   
+      positionmap[i]= initialize_pos_recursive(sock,i,trees_count-1,positionmap[i]);
+
+      char c='%';
+      if (i==tree_sizes[trees_count-1]/5)
+	printf("20%c is processed\n",c);
+      else if (i==tree_sizes[trees_count-1]/2)
+	printf("50%c is processed\n",c);
+      else if (i==tree_sizes[trees_count-1]*3/4)
+	printf("75%c is processed\n",c);
+      
       //printf("processed %d %d -------------- \n",i,positionmap[i]); 
     }
     printf("Position map is ready\n");
+    printf("Time for creating auxiliary trees: %f\n",
+	   float( clock () - begin_time ) /  CLOCKS_PER_SEC);
   }
 
 
 
   
    //Start : initialize elements
+  begin_time = clock();
   printf("Initializing elements...\n");
+  
   for(int i=0;i<ARRSIZE;i++){
     Block z;
     z=i;
@@ -213,11 +230,12 @@ int main(int argc , char *argv[])
     write_path(sock,x);
     //printf("Done i=%d-------------------------\n",i);
   }
-
+  printf("Time for creating item trees: %f\n",
+	 float( clock () - begin_time ) /  CLOCKS_PER_SEC);
 
   //end initialization
 
-
+  begin_time = clock();
 
   for(int i=0;i<requests;i++)
       
@@ -241,7 +259,9 @@ int main(int argc , char *argv[])
   
     // encrypt then decrypt then change 
     }
-
+  printf("Requests: %f\n",
+	   float( clock () - begin_time ) /  CLOCKS_PER_SEC);
+  
   char dummy[2];int dumm=2;
   send_and_recieve(sock,1,1,-1,dummy,&dumm);
 
