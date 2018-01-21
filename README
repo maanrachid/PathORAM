@@ -47,7 +47,7 @@ server 3333 10000
 
 To run the client:
 
-client ip port_number number_of_items number_of_accesses
+client ip port_number number_of_items(N) number_of_accesses(R)
 
 Example:
 
@@ -70,11 +70,14 @@ ext.h
 
 ext.h is very useful for testing:
 
-ELEMENTNUM allows you to increase the size of the data item.
 
-Z is the number of items in a node (including dummies).
+- POS_MAP_LIMIT  maximum size for a position map. To see the recursive technique, you need to use N >  POS_MAP_LIMIT
 
-TREES is the maximum number of trees.
+- ELEMENTNUM allows you to increase the size of the data item.
+
+- Z is the number of items in a node (including dummies).
+
+- TREES is the maximum number of trees.
 
 you need to recompile if you change this file
 
