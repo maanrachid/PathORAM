@@ -18,7 +18,7 @@
 
 //#define ARRSIZE 1000
 
-void encrypt(Block message[], int size);
+//void encrypt(Block message[], int size);
 //void encrypt_v2(Block message[], int size,int op);
 //void encrypt_v3(Block message[], int size,int op);
 void checkContent(Block message[],int size, char * mess);

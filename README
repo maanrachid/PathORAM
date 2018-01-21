@@ -1,0 +1,91 @@
+Introduction
+---------------
+
+This is an implementation for recursive path oblivious ram.
+
+
+
+Installation
+-----------------
+
+You need to install IPP cryptography to your machine. This is how you can install it : https://software.intel.com/en-us/get-ipp-cryptography-libraries. After installation, make sure that you set the variables IPPinc and IPPPath in my makefile:
+
+IPPinc is set for you since the headers are available in this package, but you need to set IPPPath to the path including the ipp crypto library in your machine (THIS IS IMPORTANT).
+
+Assuming IPP is installed and configured in my makefile, just run : make 
+
+IPP is needed by the client for encryption. 
+
+
+Installation without IPP
+--------------------------
+
+if you want to use your own encryption, then:
+
+- Open the file inc/Encryptor
+- Replace the implemention of the function:
+
+  void Encrypt(char message[], int size,int op,long long IV_counter)
+
+
+- Make sure that you remove everything related to IPP in the makefile (they may stop the compilation if you don't have IPP)
+
+- Run make
+
+
+Running
+----------
+
+To run the server:
+
+server port_number number_of_items
+
+Example:
+
+server 3333 10000
+
+
+To run the client:
+
+client ip port_number number_of_items number_of_accesses
+
+Example:
+
+client 127.0.0.1 3333 100000 10000
+
+
+you can always run without parameters to see how they work
+
+Notes
+--------
+
+clientOneByOne.c is also a client code. But this program asks the user to enter
+the operation and the requested item. client.c generates items from 1 To N where N
+is the number of items and sends a number of requests R where N and R are inputs from the user. 
+
+
+
+ext.h
+----------
+
+ext.h is very useful for testing:
+
+ELEMENTNUM allows you to increase the size of the data item.
+
+Z is the number of items in a node (including dummies).
+
+TREES is the maximum number of trees.
+
+you need to recompile if you change this file
+
+
+
+Contact
+--------
+
+if you have any question please contact me:
+
+Maan Haj Rachid
+mh1108047@qu.edu.qa
+Qatar University
+
