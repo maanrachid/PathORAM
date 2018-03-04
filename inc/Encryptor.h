@@ -86,13 +86,15 @@ void encrypt_wolfssl(char message[], int size,int op,long long IV_counter){
 
 void incr_pIV_ipp( Ipp8u pIV [],long long IV_counter){
 
+  memcpy(pIV,&IV_counter,sizeof(long long));
+  /*
   long long num = IV_counter;
   for(int i=5;i>=0;i--){
     pIV[i+1]= num / arr_256[i];
     num = num % arr_256[i];
   }
 
-  pIV[0]=num;
+  pIV[0]=num;*/
 }
 
 

@@ -6,10 +6,10 @@
 #include <stdio.h>
 #define BUFFERSIZE 5000
 #define ELEMENTNUM 4
-#define POS_MAP_LIMIT 500000 // 2^22
+#define POS_MAP_LIMIT 1000000 // 2^22
 #define TREES 50
 #define STACH_LIMIT 1000000
-#define Z 4
+#define Z 8
 #define PAGESIZE 512
 //#define ENCRYPT_LIB 3
 //typedef long long Block;
